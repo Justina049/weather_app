@@ -71,6 +71,28 @@ actor WeatherDApp {
   // =====================================================
   // TODO: Add functions to save/get favorite locations and user preferences
 
+  // Type for user preferences
+    type Preferences = {
+        tempUnit: Text;       // Temperature unit (e.g., "C" for Celsius, "F" for Fahrenheit)
+        windSpeedUnit: Text;  // Wind speed unit (e.g., "km/h", "mph")
+        alertsEnabled: Bool;  // Whether weather alerts are enabled or not
+    };
+
+    // Storage for saved locations (list of cities)
+    stable var savedLocations : [Text] = [];
+
+    // Storage for user preferences
+    stable var userPreferences : Preferences = {
+        tempUnit = "C",         // Default: Celsius
+        windSpeedUnit = "km/h", // Default: kilometers per hour
+        alertsEnabled = true    // Default: alerts enabled
+    };
+
+      // Add a new location to the saved locations list
+    public func addLocation(location: Text) : async Text {
+      savedLocations := Array.append(savedLocations, [location]);  // Add the location to the list
+      return "Location added.";
+  }
 
 
 
