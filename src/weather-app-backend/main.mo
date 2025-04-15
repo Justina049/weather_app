@@ -83,9 +83,9 @@ actor WeatherDApp {
 
     // Storage for user preferences
     stable var userPreferences : Preferences = {
-        tempUnit = "C",         // Default: Celsius
-        windSpeedUnit = "km/h", // Default: kilometers per hour
-        alertsEnabled = true    // Default: alerts enabled
+        tempUnit = "C";         // Default: Celsius
+        windSpeedUnit = "km/h"; // Default: kilometers per hour
+        alertsEnabled = true;    // Default: alerts enabled
     };
 
       // Add a new location to the saved locations list
