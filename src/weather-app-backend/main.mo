@@ -80,5 +80,98 @@ actor WeatherDApp {
   // /feedback
   // =====================================================
   // TODO: Add function to submit and retrieve feedback
+type Feedback = {
+    id : Nat;
+    user : Principal;
+    message : Text;
+    location : ?{ lat : Float; lng : Float }; // Location tagging
+    timestamp : Int;
+  };
 
+  type RateLimit = {
+    lastSubmissionTime : Int;
+    submissionCount : Nat;
+  };
+
+  //======= CONSTANTS =======
+  let RATE_LIMIT_WINDOW : Int = 60; // 1 minute
+  let MAX_SUBMISSIONS : Nat = 5; // Max submissions in the window
+
+  //======= STORAGE =======
+  stable var nextFeedbackId : Nat = 0;
+  stable var feedbacks : [Feedback] = [];
+  stable var stableRateLimit : [(Principal, RateLimit)] = [];
+
+  var ratelimits = HashMap.fromIter<Principal, RateLimit>(
+    stableRateLimit.vals(),
+    0,
+    Principal.equal,
+    Principal.hash,
+  );
+
+  //======= METHODS =======
+  public shared ({ caller }) func submit_feedback(
+    message : Text,
+    location : ?{ lat : Float; lng : Float },
+  ) : async Text {
+    //rate limit check
+    let now = Time.now();
+    let milliseconds = now / 1_000_000; // Convert to milliseconds
+    // Store `milliseconds` instead of `now`
+    let userLimit = switch (ratelimits.get(caller)) {
+      case (?limit) {
+        if (now - limit.lastSubmissionTime < RATE_LIMIT_WINDOW) {
+          assert (limit.submissionCount < MAX_SUBMISSIONS);
+          {
+            lastSubmissionTime = limit.lastSubmissionTime; // original time
+            submissionCount = limit.submissionCount + 1;
+          };
+        } else {
+          {
+            lastSubmissionTime = now;
+            submissionCount = 1;
+          };
+        };
+      };
+      case null {
+        {
+          lastSubmissionTime = now;
+          submissionCount = 1;
+        };
+      };
+    };
+    ratelimits.put(caller, userLimit);
+
+    //store feedback
+    let newFeedback : Feedback = {
+      id = nextFeedbackId;
+      user = caller;
+      message;
+      location;
+      timestamp = milliseconds;
+    };
+
+    feedbacks := Array.append(feedbacks, [newFeedback]);
+    nextFeedbackId += 1;
+
+    return "Feedback submitted successfully.";
+  };
+
+  public query func get_feedback() : async [Feedback] {
+    return feedbacks;
+  };
+
+  //=========SYSTEM METHODS ===========
+  system func preupgrade() {
+    stableRateLimit := Iter.toArray(ratelimits.entries());
+  };
+
+  system func postupgrade() {
+    ratelimits := HashMap.fromIter<Principal, RateLimit>(
+      stableRateLimit.vals(),
+      0,
+      Principal.equal,
+      Principal.hash,
+    );
+  };
 }
