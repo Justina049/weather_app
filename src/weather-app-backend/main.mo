@@ -1,8 +1,18 @@
-// import Principal "mo:base/Principal";
+import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 import Float "mo:base/Float";
 import List "mo:base/List";
 import Array "mo:base/Array";
+import HashMap "mo:base/HashMap";
+import Time "mo:base/Time";
+import Iter "mo:base/Iter";
+import Nat "mo:base/Nat";
+import Int "mo:base/Int";
+import Result "mo:base/Result";
+import Buffer "mo:base/Buffer";
+import Blob "mo:base/Blob";
+
+
 
 actor WeatherDApp {
 
@@ -12,6 +22,7 @@ actor WeatherDApp {
     temperature : Float;
     description : Text;
     humidity : Nat;
+    timestamp : Int;  // Timestamp in nanoseconds
   };
 
   type Forecast = {
