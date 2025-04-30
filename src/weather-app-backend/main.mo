@@ -8,9 +8,9 @@ import Time "mo:base/Time";
 import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
 import Int "mo:base/Int";
-import Result "mo:base/Result";
-import Buffer "mo:base/Buffer";
-import Blob "mo:base/Blob";
+// import Result "mo:base/Result";
+// import Buffer "mo:base/Buffer";
+// import Blob "mo:base/Blob";
 import IC "IC";
 
 
@@ -57,6 +57,17 @@ actor WeatherDApp {
     currentWeather := ?weather;
     return "Current weather data saved.";
   };
+
+  // ========== FETCH WEATHER FROM API ==========
+
+  public query func transform(args: IC.TransformArgs) : async IC.http_request_result {
+    {
+      status = args.response.status;
+      body = args.response.body;
+      headers = [];
+    };
+  };
+
 
   // Get current weather data
   public query func get_weather() : async ?Weather {
