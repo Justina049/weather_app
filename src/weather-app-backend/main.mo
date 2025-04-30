@@ -11,7 +11,7 @@ import Int "mo:base/Int";
 import Result "mo:base/Result";
 import Buffer "mo:base/Buffer";
 import Blob "mo:base/Blob";
-
+import IC "IC";
 
 
 actor WeatherDApp {
