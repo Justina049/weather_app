@@ -68,6 +68,17 @@ actor WeatherDApp {
     };
   };
 
+  private func make_api_url(city : Text, kind : Text) : Text {
+    let apiKey = "60b93f6ca3ac45c3b3050a7c23c3c022";
+    if (kind == "current") {
+      return "https://api.openweathermap.org/data/2.5/weather?q=" # city # "&appid=" # apiKey # "&units=metric";
+    } else if (kind == "forecast") {
+      return "https://api.openweathermap.org/data/2.5/forecast?q=" # city # "&appid=" # apiKey # "&units=metric";
+    } else {
+      return "";
+    };
+  };
+
 
   // Get current weather data
   public query func get_weather() : async ?Weather {
