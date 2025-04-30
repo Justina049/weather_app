@@ -10,7 +10,8 @@ import Nat "mo:base/Nat";
 import Int "mo:base/Int";
 // import Result "mo:base/Result";
 // import Buffer "mo:base/Buffer";
-// import Blob "mo:base/Blob";
+import Blob "mo:base/Blob";
+import Cycles "mo:base/ExperimentalCycles";
 import IC "IC";
 
 
@@ -76,6 +77,36 @@ actor WeatherDApp {
       return "https://api.openweathermap.org/data/2.5/forecast?q=" # city # "&appid=" # apiKey # "&units=metric";
     } else {
       return "";
+    };
+  };
+
+  private func call_weather_api(url: Text) : async Text {
+    let headers = [{ name = "Accept"; value = "application/json"; }];
+    let transform_context : IC.TransformContext = {
+      function = transform;
+      context = Blob.fromArray([]);
+    };
+
+    let request : IC.HttpRequestArgs = {
+      url = url;
+      max_response_bytes = ?10000;
+      method = #get;
+      headers = headers;
+      body = null;
+      transform = ?transform_context;
+    };
+
+    let ic = actor ("aaaaa-aa") : IC.Self;
+    Cycles.add<system>(230_949_972_000);
+
+    let response = await ic.http_request(request);
+    if (response.status == 200) {
+      switch (Text.decodeUtf8(response.body)) {
+        case (?text) text;
+        case null "Failed to decode response";
+      };
+    } else {
+      "HTTP Error: " # Nat.toText(response.status);
     };
   };
 
