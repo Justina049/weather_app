@@ -110,22 +110,32 @@ actor WeatherDApp {
     };
   };
 
-
-  // Get current weather data
-  public query func get_weather() : async ?Weather {
-    return currentWeather;
+  public shared func get_current_weather(city: Text) : async Text {
+    let url = make_api_url(city, "current");
+    return await call_weather_api(url);
   };
+
+  public shared func get_forecast_weather(city: Text) : async Text {
+    let url = make_api_url(city, "forecast");
+    return await call_weather_api(url);
+  };
+
+
+  // // Get current weather data
+  // public query func get_weather() : async ?Weather {
+  //   return currentWeather;
+  // };
 
   // Set forecast list (override existing)
-  public func set_forecast(forecastList : [Forecast]) : async Text {
-    weatherForecast := List.fromArray(forecastList);
-    return "Forecast data saved.";
-  };
+  // public func set_forecast(forecastList : [Forecast]) : async Text {
+  //   weatherForecast := List.fromArray(forecastList);
+  //   return "Forecast data saved.";
+  // };
 
   // Get forecast list
-  public query func get_forecast() : async [Forecast] {
-    return List.toArray(weatherForecast);
-  };
+  // public query func get_forecast() : async [Forecast] {
+  //   return List.toArray(weatherForecast);
+  // };
 
 
 
